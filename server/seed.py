@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-#server/seed.py
+
 from random import choice as rc
 from faker import Faker
 
@@ -7,25 +7,24 @@ from app import app
 from models import db, Pet
 
 with app.app_context():
-
-    # Create and initialize a faker generator
     fake = Faker()
 
-    # Delete all rows in the "pets" table
+    # Clear existing records
     Pet.query.delete()
 
-    # Create an empty list
+    species_list = ['Dog', 'Cat', 'Chicken', 'Hamster', 'Turtle']
     pets = []
 
-    species = ['Dog', 'Cat', 'Chicken', 'Hamster', 'Turtle']
-
-    # Add some Pet instances to the list
+    # Create 10 random pets
     for n in range(10):
-        pet = Pet(name=fake.first_name(), species=rc(species))
+        pet = Pet(
+            name=fake.first_name(),
+            species=rc(species_list)
+        )
         pets.append(pet)
 
-    # Insert each Pet in the list into the "pets" table
+    # Add to database
     db.session.add_all(pets)
-
-    # Commit the transaction
     db.session.commit()
+
+    print("✅ Database seeded with 10 random pets!")
